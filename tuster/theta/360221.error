@@ -1,0 +1,19 @@
+2019-08-06 21:34:25,989	WARNING services.py:142 -- Some processes that the driver needs to connect to have not registered with Redis, so retrying. Have you run 'ray start' on this node?
+2019-08-06 21:34:27,305	WARNING services.py:142 -- Some processes that the driver needs to connect to have not registered with Redis, so retrying. Have you run 'ray start' on this node?
+2019-08-06 21:34:28,337	WARNING services.py:142 -- Some processes that the driver needs to connect to have not registered with Redis, so retrying. Have you run 'ray start' on this node?
+2019-08-06 21:34:29,344	WARNING services.py:142 -- Some processes that the driver needs to connect to have not registered with Redis, so retrying. Have you run 'ray start' on this node?
+2019-08-06 21:34:30,355	WARNING services.py:142 -- Some processes that the driver needs to connect to have not registered with Redis, so retrying. Have you run 'ray start' on this node?
+Traceback (most recent call last):
+  File "/projects/datascience/regele/tuning-scripts/m1/go_ray.py", line 142, in <module>
+    if rank == 0: master()
+  File "/projects/datascience/regele/tuning-scripts/m1/go_ray.py", line 104, in master
+    ray.init(redis_address=redis_address)
+  File "/lus/theta-fs0/projects/datascience/regele/dh-opt/lib/python3.6/site-packages/ray/worker.py", line 1478, in init
+    ray_params, head=False, shutdown_at_exit=False, connect_only=True)
+  File "/lus/theta-fs0/projects/datascience/regele/dh-opt/lib/python3.6/site-packages/ray/node.py", line 120, in __init__
+    redis_password=self.redis_password)
+  File "/lus/theta-fs0/projects/datascience/regele/dh-opt/lib/python3.6/site-packages/ray/services.py", line 135, in get_address_info_from_redis
+    redis_address, node_ip_address, redis_password=redis_password)
+  File "/lus/theta-fs0/projects/datascience/regele/dh-opt/lib/python3.6/site-packages/ray/services.py", line 107, in get_address_info_from_redis_helper
+    "Redis has started but no raylets have registered yet.")
+Exception: Redis has started but no raylets have registered yet.
