@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 import os
+import sys
 import subprocess
 import socket
 import signal
 import logging
-logging.basicConfig(
-        filename='app.log',
-        format='%(asctime)s | %(message)s',
-        datefmt='%m/%d/%Y %I:%M:%S %p',
-        level=logging.INFO)
 import psutil
 from pprint import pformat
 import ray
@@ -79,25 +75,8 @@ def run_ray_worker(head_redis_address):
         )
 
 def fetch_ip():
-    # addrs_kind = "ipogif0"
+    return socket.gethostbyname(socket.gethostname())
 
-    # addrs = [
-    #     x.address for k, v in psutil.net_if_addrs().items() if k == addrs_kind
-    #               for x in v if x.family == socket.AddressFamily.AF_INET
-    #         ]
-    # return addrs[0]
-
-    ip = socket.gethostbyname(socket.gethostname())
-
-    return ip
-
-
-@ray.remote
-def calc():
-    res = fetch_ip()
-    with open(f'res_{time.time()}', 'w') as f:
-        f.write(str(res))
-    return res
 
 def master():
     head_ip = fetch_ip()
@@ -126,14 +105,8 @@ def master():
 
     logging.info('Ready to start driver!')
 
-    # driver(head_redis_address)
 
-    # comm.barrier() # waiting for driver to end
-    # logging.info('Driver done...')
-
-    # ray.shutdown()
-
-def driver(head_redis_address):
+def driver(head_redis_address, exe):
     logging.info(f'Starting driver, wants to connect to head at: {head_redis_address}')
     sleep_time = 5
     infos = None
@@ -152,24 +125,19 @@ def driver(head_redis_address):
     nodes_infos = ray.nodes()
     logging.info(f'Cluster as {len(nodes_infos)} nodes:\n {pformat(nodes_infos)}')
 
-    val_id = [calc.remote() for _ in range(10)]
-    res = ray.get(val_id)
-    logging.info(f'res: {str(res)}')
-
-    # with open('ytopt.out', 'wb') as fp:
-    #     logging.info("about to run ytopt subprocess...")
-    #     # os.system(f'python -m ytopt.search.ambs --evaluator ray --redis-address {redis_address} --problem ytopt.benchmark.ackley.problem.Problem')
-    #     subprocess.run(
-    #        f'python -m ytopt.search.ambs --evaluator ray --redis-address {"localhost"} --problem ytopt.benchmark.ackley.problem.Problem',
-    #        shell=True,
-    #        stdout=fp,
-    #        stderr=subprocess.STDOUT,
-    #        check=True,
-    #     )
-    #     logging.info("ytopt subprocess is finished. exiting.")
+    with open('exe.out', 'wb') as fp:
+        subprocess.run(
+        #    f'python -m ytopt.search.ambs --evaluator ray --redis-address {"localhost"} --problem ytopt.benchmark.ackley.problem.Problem',
+            exe,
+            shell=True,
+            stdout=fp,
+            stderr=subprocess.STDOUT,
+            check=True,
+        )
+        logging.info("ytopt subprocess is finished. exiting.")
 
 
-def worker(run_driver=False):
+def worker(run_driver=False, exe=None):
     head_redis_address = None
 
     logging.info('Waiting for broadcast...')
@@ -182,13 +150,21 @@ def worker(run_driver=False):
     comm.barrier() # waiting for all workers to start
 
     if run_driver:
-       driver(head_redis_address)
-
-    # comm.barrier() # waiting for driver to finish
-    # ray_stop()
+        driver(head_redis_address, exe)
 
 if __name__ == "__main__":
-    if rank == 0:
-        logging.info(f'CPU count: ({psutil.cpu_count()}, logical=True); ({psutil.cpu_count(logical=False)}, logical=False)')
-        master()
-    else: worker(rank==1)
+
+    try:
+        exe = sys.argv[1]
+    except IndexError:
+        from tuster.exceptions import TusterError
+        raise TusterError('No executable was given...')
+
+    logging.basicConfig(
+        filename='tuster.log',
+        format='%(asctime)s | %(message)s',
+        datefmt='%m/%d/%Y %I:%M:%S %p',
+        level=logging.INFO)
+
+    if rank == 0: master()
+    else: worker(run_driver=rank==1, exe=exe)

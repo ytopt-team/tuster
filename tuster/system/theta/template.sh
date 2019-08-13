@@ -1,8 +1,9 @@
 #!/bin/sh
-#COBALT -A datascience
-#COBALT -n 2
-#COBALT -q debug-cache-quad
-#COBALT -t 30
+# -*- coding: utf-8 -*-
+#COBALT -A {{ A }}
+#COBALT -n {{ n }}
+#COBALT -q {{ q }}
+#COBALT -t {{ t }}
 #COBALT --attrs enable_ssh=1:ssds=required:ssd_size=128
 
 module unload trackdeps
@@ -17,11 +18,13 @@ export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
 # Activate good python environment
-source /projects/datascience/regele/dh-opt/bin/activate
+#source /projects/datascience/regele/dh-opt/bin/activate
+
+export PATH={{ python_bin }}:$PATH
 
 # deactivate core dump (comment for debug)
 ulimit -c 0
 
 # Start cluster
-aprun -n $COBALT_JOBSIZE -N 1  python /projects/datascience/regele/tuning-scripts/m1/go_ray.py
+aprun -n $COBALT_JOBSIZE -N 1  python -m tuster.system.theta.run '{{ exe }}'
 

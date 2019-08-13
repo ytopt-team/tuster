@@ -1,0 +1,1 @@
+from tuster.cli.cli import main

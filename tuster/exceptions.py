@@ -1,0 +1,1 @@
+class TusterError(RuntimeError): pass
