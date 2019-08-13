@@ -108,27 +108,10 @@ def master():
 
 def driver(head_redis_address, exe):
     logging.info(f'Starting driver, wants to connect to head at: {head_redis_address}')
-    sleep_time = 5
-    infos = None
-    while infos is None: # Raylets can take some time to register
-        try:
-            infos = ray.init(redis_address=head_redis_address)
-            logging.info(infos)
-        except ConnectionError:
-            logging.info('Quitting driver start-up...', exc_info=True)
-            return
-        except Exception as e:
-            logging.info('Failed to init driver... sleeping for 1sec...', exc_info=True)
-            time.sleep(sleep_time)
-
-    logging.info(f'Driver started on: {fetch_ip()}')
-    nodes_infos = ray.nodes()
-    logging.info(f'Cluster as {len(nodes_infos)} nodes:\n {pformat(nodes_infos)}')
 
     with open('exe.out', 'wb') as fp:
         subprocess.run(
-        #    f'python -m ytopt.search.ambs --evaluator ray --redis-address {"localhost"} --problem ytopt.benchmark.ackley.problem.Problem',
-            exe,
+            exe.format(redis_address=head_redis_address),
             shell=True,
             stdout=fp,
             stderr=subprocess.STDOUT,
