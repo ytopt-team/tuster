@@ -3,6 +3,7 @@
 #COBALT -n 2
 #COBALT -q debug-cache-quad
 #COBALT -t 30
+#COBALT --attrs enable_ssh=1:ssds=required:ssd_size=128
 
 module unload trackdeps
 module unload darshan
@@ -17,6 +18,9 @@ export LANG=C.UTF-8
 
 # Activate good python environment
 source /projects/datascience/regele/dh-opt/bin/activate
+
+# deactivate core dump (comment for debug)
+ulimit -c 0
 
 # Start cluster
 aprun -n $COBALT_JOBSIZE -N 1  python /projects/datascience/regele/tuning-scripts/m1/go_ray.py
