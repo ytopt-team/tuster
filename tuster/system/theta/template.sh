@@ -1,5 +1,4 @@
 #!/bin/sh
-# -*- coding: utf-8 -*-
 #COBALT -A {{ A }}
 #COBALT -n {{ n }}
 #COBALT -q {{ q }}
