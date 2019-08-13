@@ -1,5 +1,11 @@
 # Tuster: TUning clUSTER
 
+## Install
+
+In the same folder as `setup.py` run:
+```
+pip install -e .
+```
 
 ## Quick start
 
