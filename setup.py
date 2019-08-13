@@ -26,7 +26,7 @@ DP_LINKS = []
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'ray==0.7.2',
+    'ray==0.7.3',
     'mpi4py',
     'Jinja2'
 ]
