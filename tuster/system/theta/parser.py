@@ -23,7 +23,11 @@ def add_subparser(subparsers):
 def main(**kwargs):
 
     date = ("_".join(str(datetime.datetime.now()).split(' '))).split('.')[0]
-    with open(f'tuster-{date}.sh', 'w') as f:
+    fname = f'tuster-{date}.sh'
+
+    with open(fname, 'w') as f:
         f.write(render(
             python_bin=os.path.dirname(sys.executable),
             **kwargs))
+
+    os.system(f'qsub {fname}')
