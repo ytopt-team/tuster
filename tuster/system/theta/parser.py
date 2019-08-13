@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+import stat
 import datetime
 
 from tuster.system.theta.render import render
@@ -29,5 +30,8 @@ def main(**kwargs):
         f.write(render(
             python_bin=os.path.dirname(sys.executable),
             **kwargs))
+
+    # make the file executable
+    os.chmod(fname, stat.S_IEXEC)
 
     os.system(f'qsub {fname}')
